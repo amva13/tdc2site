@@ -1,25 +1,30 @@
 // src/ExistingHtmlComponent.js
 import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import htmlMain from "./homepage.html";
+import './homepage.css';
 
 const HomePage = () => {
-    // const iframeRef = useRef(null);
-
-    // useEffect(() => {
-    //     const iframe = iframeRef.current;
-    //     iframe.src = '/homepage.html';
-    // }, []);
-    // var __html = require("./homepage.html");
+    const navigate = useNavigate();
+    const contentRef = useRef(null);
     var __html = htmlMain;
     var template = { __html: __html };
 
+    useEffect(() => {
+        const handleLinkClick = (event) => {
+          if (event.target.tagName === 'A' && event.target.href.startsWith(window.location.origin)) {
+            event.preventDefault();
+            navigate(event.target.getAttribute('href'));
+          }
+        };
+    contentRef.current.addEventListener('click', handleLinkClick);
+    return () => {
+        contentRef.current.removeEventListener('click', handleLinkClick);
+      };
+    }, [navigate])
+
     return (
-        // <iframe
-        //     ref={iframeRef}
-        //     title="Existing HTML"
-        //     style={{ width: '100%', height: '100vh', border: 'none' }}
-        // />
-        <div dangerouslySetInnerHTML={template} />
+        <div ref={contentRef} dangerouslySetInnerHTML={template} />
     );
 };
 
